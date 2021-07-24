@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <h1>Hello Balloon World!</h1>
+        <button id="button">New World</button>
+        <div id="world_data">
+            <h3>World Name: <span id="world_name"></span> </h3>
+            <h3>World Colour: <span id="world_colour"></span> </h3>
+            <h3>Number of Balloons: <span id="number_of_balloons"></span> </h3>
+        </div>
+        <div id="balloon_data">
+
+        </div>
+        
+        
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
+    <script>
+        const fetchDataButton = document.querySelector("#button")
+        const worldData = document.querySelector("#world_data")
+        const balloonData = document.querySelector("#balloon_data")
+        const worldName = document.querySelector("#world_name")
+        const worldColour = document.querySelector("#world_colour")
+        const numberOfBalloons = document.querySelector("#number_of_balloons")
+        console.log(worldName)
+        
+        let colour;
+
+        let balloons;
+        
+        
+
+        const getBalloonData = ()=>{
+            // resultDiv.innerText = "Loading...."
+            fetch("/balloon_world")
+                .then(response =>{
+                    return response.json()
+                })
+                .then(data =>{
+                    // assigning values
+                    worldName.textContent = data.created_world_name
+                    worldColour.textContent = data.created_world_colour
+                    numberOfBalloons.textContent = data.number_of_balloons
+
+                    colour = data.created_world_colour
+
+                    
+
+                    // get balloon data and make json
+                    let balloons_as_json = data.balloons_as_json
+                    balloons = JSON.parse(balloons_as_json)
+                    console.log(balloons.length)
+                    console.log(colour)
+                   
+                   
+                    
+                })
+                .catch(error =>{
+                    console.log(error)
+                })
+
+                
+        }
+
+        fetchDataButton.addEventListener("click", getBalloonData)
+        console.log(colour)
+        
+
+        // p5
+
+        let button
+
+        function setup(){
+            width = 400
+            height = 400
+            canvas = createCanvas(width, height)
+            canvas.parent("balloon_data")
+            button = createButton("Generate World")
+            button.position(width/2,height/2)
+            button.mousePressed(buttonClicked)
+        }
+
+        function draw(){
+            let red = colour[0]
+            let green= colour[1]
+            let blue= colour[2]
+            background(red,green, blue )
+            
+            for (let i = 0; i<balloons.length; i++){
+                let randomX = Math.random() * 400
+                let randomY = Math.random() * 400
+                circle(randomX, randomY, 7)
+                console.log("shape")
+            }
+            
+
+           
+           
+        }
+
+        function buttonClicked(){
+            redraw()
+
+            // rect(10,10,10,10)
+            // console.log("button pressed")
+            // circle(10,10,10)
+            // for (let i = 0; i<balloons.length; i++){
+            //     let random = Math.random() * 400
+            //     circle(10, 10, 7)
+            //     console.log("shape")
+            // }
+            
+        }
+
+        // function mousePressed(){
+        //     console.log("mouse press")
+        //     setTimeout(redraw(), 5000)
+            
+            
+        // }
+
+        // function keyTyped(){
+        //     if (keyCode === "DOWN_ARROW"){
+        //         // redraw()
+        //         console.log("redrawing....")
+        //     }
+        // }
+
+      
+
+       
+
+
+        
+
+        
+        
+
+        
+
+       
+       
+
+        
+
+       
+
+        
+
+        
+        
+       
+        
+        
+        
+    </script>
+</html>
