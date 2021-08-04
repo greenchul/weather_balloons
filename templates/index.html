@@ -16,55 +16,59 @@
     </head>
     <body>
         <h1>Hello Balloon World!</h1>
-        <button id="button">New World</button>
+        <!-- <button id="button">New World</button> -->
         <div id="world_data">
             <h3>World Name: <span id="world_name"></span> </h3>
-            <h3>World Colour: <span id="world_colour"></span> </h3>
-            <h3>Number of Balloons: <span id="number_of_balloons"></span> </h3>
+            
         </div>
         <div id="balloon_data">
 
+        </div>
+
+        <div class = "card w-50">
+            <div class="card-body">
+                <h5 class="card-title">Balloon Info</h5>
+                <ul>
+                    <li>Name: <span id="balloon_name"></span></li>
+                    <li>Colour: <span id="balloon_colour"></span></li>
+                    <li>Temperature: <span id="balloon_temperature"></span></li>
+                    
+                </ul>
+                
+                
+            </div>
+            
         </div>
         
         
     </body>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
     <script>
-        const fetchDataButton = document.querySelector("#button")
-        const worldData = document.querySelector("#world_data")
-        const balloonData = document.querySelector("#balloon_data")
-        const worldName = document.querySelector("#world_name")
-        const worldColour = document.querySelector("#world_colour")
-        const numberOfBalloons = document.querySelector("#number_of_balloons")
-        console.log(worldName)
         
-        let colour;
+        
+        let worldName = document.querySelector("#world_name")
+        let balloon_name = document.querySelector("#balloon_name")
+        let balloon_colour = document.querySelector("#balloon_colour")
+        let balloon_temperature = document.querySelector("#balloon_temperature")
 
-        let balloons;
+        let colour = [0,0,0]
+        let balloons = []
         
-        
-
-        const getBalloonData = ()=>{
-            // resultDiv.innerText = "Loading...."
-            fetch("/balloon_world")
+        const getWorldData = ()=>{
+            
+            fetch("/api_balloon_world")
                 .then(response =>{
                     return response.json()
                 })
                 .then(data =>{
                     // assigning values
-                    worldName.textContent = data.created_world_name
-                    worldColour.textContent = data.created_world_colour
-                    numberOfBalloons.textContent = data.number_of_balloons
-
-                    colour = data.created_world_colour
-
+                    worldName.textContent = data.name
                     
-
+                    colour = data.colour
                     // get balloon data and make json
-                    let balloons_as_json = data.balloons_as_json
-                    balloons = JSON.parse(balloons_as_json)
-                    console.log(balloons.length)
-                    console.log(colour)
+                    // let balloons_as_json = data.balloons_as_json
+                    balloons = data.balloons
+                   
                    
                    
                     
@@ -76,69 +80,95 @@
                 
         }
 
-        fetchDataButton.addEventListener("click", getBalloonData)
-        console.log(colour)
+        // fetchDataButton.addEventListener("click", getWorldData)
+        
+        setInterval(getWorldData, 1000)
         
 
         // p5
 
-        let button
+       
+
+        let cam
+        let density
 
         function setup(){
-            width = 400
-            height = 400
-            canvas = createCanvas(width, height)
+            loadPixels()
+            density = pixelDensity()
+            
+            console.log(density)
+            width = 600
+            height = 600
+
+            canvas = createCanvas(width, height, WEBGL)
             canvas.parent("balloon_data")
-            button = createButton("Generate World")
-            button.position(width/2,height/2)
-            button.mousePressed(buttonClicked)
+
+            cam = createCamera()
+            
+            
+            
         }
 
         function draw(){
+            
+            let index = 4 * ((mouseY * density) * width * density + (mouseX * density))
+            console.log(pixels[index])
             let red = colour[0]
             let green= colour[1]
             let blue= colour[2]
             background(red,green, blue )
+            orbitControl();
+            lights()
+            translate(0,0,0)
             
+            let balloon_found = false
+            balloon_name.innerHTML = " "
+            balloon_colour.innerHTML = " "
+            balloon_temperature.innerHTML = " "
             for (let i = 0; i<balloons.length; i++){
-                let randomX = Math.random() * 400
-                let randomY = Math.random() * 400
-                circle(randomX, randomY, 7)
-                console.log("shape")
+                push()
+                balloon = balloons[i]
+
+                let X = balloon.location[0] 
+                let Y = -balloon.location[1]
+                let Z = balloon.location[2]
+
+                translate(X, Y, Z)
+                fill(255, 180, 4)
+                noStroke()
+                let sphereDiameter = 10
+                sphere(sphereDiameter)
+                pop()
+
+                // if (i===0){
+                //     console.log(cam.eyeX, cam.eyeY, cam.eyeZ)
+                // }
+
+
+                let mouseXalt = mouseX - width/2
+                let mouseYalt = mouseY - height/2
+                // console.log(mouseXalt, mouseYalt)
+                let threshold = sphereDiameter/2
+                if (!balloon_found){
+                    if((mouseXalt - threshold< X) && (X < mouseXalt + threshold) && (mouseYalt- threshold <Y ) && (Y <mouseYalt + threshold) ){
+                    // console.log("yay it works")
+                    balloon_name.innerHTML = balloon.balloon_name
+                    balloon_colour.innerHTML = balloon.balloon_colour
+                    balloon_temperature.innerHTML = balloon.balloon_temperature
+                    balloon_found = true
+                    }
+                    
+                }
+                
             }
-            
 
-           
            
         }
 
-        function buttonClicked(){
-            redraw()
+        
 
-            // rect(10,10,10,10)
-            // console.log("button pressed")
-            // circle(10,10,10)
-            // for (let i = 0; i<balloons.length; i++){
-            //     let random = Math.random() * 400
-            //     circle(10, 10, 7)
-            //     console.log("shape")
-            // }
-            
-        }
+       
 
-        // function mousePressed(){
-        //     console.log("mouse press")
-        //     setTimeout(redraw(), 5000)
-            
-            
-        // }
-
-        // function keyTyped(){
-        //     if (keyCode === "DOWN_ARROW"){
-        //         // redraw()
-        //         console.log("redrawing....")
-        //     }
-        // }
 
       
 
