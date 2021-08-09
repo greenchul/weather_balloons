@@ -90,7 +90,25 @@
        
 
         let camera
-        
+
+        const seaMatrix = []
+        let scaleAmount = 100
+        let w = 3500
+        let h = 2000
+        let rows;
+        let cols;
+
+        let width;
+        let height;
+
+        let movement = 0
+        let cloud
+
+
+        function preload(){
+            cloud = loadModel("static/sketch/cloud.obj", true)
+            img = loadImage("static/sketch/cloudTexture.jpeg")
+        }
 
         function setup(){
             
@@ -101,6 +119,9 @@
             canvas.parent("balloon_data")
 
             camera = createCamera()
+
+            rows = h/scaleAmount
+            cols = w/scaleAmount
             
             
             
@@ -114,10 +135,50 @@
             let blue= colour[2]
             background(red,green, blue )
 
+            movement -= 0.015
+            let xIncrement =0
+            let yIncrement =movement
+
            
             
             lights()
             translate(0,0,0)
+
+            ///////// create sea matrix ///////////
+
+            for (let x = 0; x<cols; x++){
+                xIncrement = 0
+                seaMatrix[x]=[]
+ 
+                for(let y = 0; y<rows; y++){
+    
+                    seaMatrix[x][y]=map(noise(xIncrement,yIncrement), 0,1, -100, 100)  
+                    xIncrement -=0.4
+                }
+                yIncrement -=0.3
+   
+            }
+            //// create sea shape //////
+            push()
+            stroke(255,255,250)
+            // noStroke()
+            fill(0,100,150)
+            
+            rotateX(PI / 3)
+            // translate(-width / 2, -height/1, -width/2)
+            translate(-w/2, -h/1, -h/2)
+            
+            for (let y = 0; y<rows; y++){
+                beginShape(TRIANGLE_STRIP)
+                
+                for(let x = 0; x<cols; x++){
+                vertex(x*scaleAmount, y*scaleAmount, seaMatrix[x][y])
+                vertex(x*scaleAmount, (y+1)*scaleAmount, seaMatrix[x][y+1])
+                }
+            endShape()
+            }
+  
+            pop()
             
             let lookingForBalloon = true
             balloon_name.innerHTML = " "
@@ -166,7 +227,19 @@
               
                 
             }
+        //// clouds
 
+        push()
+        translate(0,-200,0)
+        rotateY(90)
+        scale(0.6)
+        noStroke()
+        texture(img)
+        model(cloud)
+        
+        pop()
+
+        
 
             // move camera
         if (keyIsDown(LEFT_ARROW)) {
