@@ -17,6 +17,7 @@ app.config["SECRET_KEY"] = "We just need a secret here: I like yellow."
 
 @app.route("/") 
 def index(): 
+    
     rendered_html = render_template("index.html")
     return rendered_html
     
