@@ -11,7 +11,7 @@ class World:
     def __init__(self):
         self.name = f"{names.get_last_name()}-{secrets.token_urlsafe(3)}"
         self.colour = (random.randrange(0,255), random.randrange(0,255),random.randrange(0,255))
-        self.number_of_weather_balloons = random.randrange(5,20)
+        self.number_of_weather_balloons = random.randrange(2,5)
         self.weather_balloons = []
         self.maximum_z = 100
         self.maximum_x = 300
@@ -43,19 +43,25 @@ class Weather_balloon:
         self.maximum_y = maximum_y
         self.maximum_x = maximum_x
         self.maximum_z = maximum_z
-        self.location = [random.randrange(-self.maximum_x, self.maximum_x), -self.maximum_y/2, 0]
-        self.balloon_colour = (random.randrange(0,255),random.randrange(0,255),random.randrange(0,255))
+        self.location = [random.randrange(-self.maximum_x, self.maximum_x), -self.maximum_y/2, random.randrange(-self.maximum_z, self.maximum_z)]
         self.balloon_name = secrets.token_urlsafe(2)
         self.balloon_temperature = random.randrange(-25, 50)
+        self.balloon_pressure = random.randrange(950, 1050)
+        self.balloon_red = 255
+        self.balloon_green = 245
+        self.balloon_blue = 230
         self.increase_altitude()
 
 
     def get_data(self):
         data = {}
         data["location"] = self.location
-        data["balloon_colour"] = self.balloon_colour
         data["balloon_name"] = self.balloon_name
         data["balloon_temperature"] = self.balloon_temperature
+        data["balloon_red"]= self.balloon_red
+        data["balloon_green"]= self.balloon_green
+        data["balloon_blue"]= self.balloon_blue
+        data["balloon_pressure"] = self.balloon_pressure
         return data
 
 

@@ -30,7 +30,7 @@
                 <h5 class="card-title">Balloon Info</h5>
                 <ul>
                     <li>Name: <span id="balloon_name"></span></li>
-                    <li>Colour: <span id="balloon_colour"></span></li>
+                    <li>Pressure: <span id="balloon_pressure"></span></li>
                     <li>Temperature: <span id="balloon_temperature"></span></li>
                     
                 </ul>
@@ -48,7 +48,7 @@
         
         let worldName = document.querySelector("#world_name")
         let balloon_name = document.querySelector("#balloon_name")
-        let balloon_colour = document.querySelector("#balloon_colour")
+        let balloon_pressure = document.querySelector("#balloon_pressure")
         let balloon_temperature = document.querySelector("#balloon_temperature")
 
         let colour = [0,0,0]
@@ -89,21 +89,18 @@
 
        
 
-        let cam
-        let density
+        let camera
+        
 
         function setup(){
-            loadPixels()
-            density = pixelDensity()
             
-            console.log(density)
             width = 600
             height = 600
 
             canvas = createCanvas(width, height, WEBGL)
             canvas.parent("balloon_data")
 
-            cam = createCamera()
+            camera = createCamera()
             
             
             
@@ -111,56 +108,90 @@
 
         function draw(){
             
-            let index = 4 * ((mouseY * density) * width * density + (mouseX * density))
-            console.log(pixels[index])
+
             let red = colour[0]
             let green= colour[1]
             let blue= colour[2]
             background(red,green, blue )
-            orbitControl();
+
+           
+            
             lights()
             translate(0,0,0)
             
-            let balloon_found = false
+            let lookingForBalloon = true
             balloon_name.innerHTML = " "
-            balloon_colour.innerHTML = " "
+            balloon_pressure.innerHTML = " "
             balloon_temperature.innerHTML = " "
+
+
             for (let i = 0; i<balloons.length; i++){
+
                 push()
                 balloon = balloons[i]
-
                 let X = balloon.location[0] 
                 let Y = -balloon.location[1]
                 let Z = balloon.location[2]
-
                 translate(X, Y, Z)
-                fill(255, 180, 4)
+                fill(balloon.balloon_red, balloon.balloon_green, balloon.balloon_blue)
                 noStroke()
-                let sphereDiameter = 10
+                let sphereDiameter = 20
                 sphere(sphereDiameter)
                 pop()
+                
+                // set thresholds
+                let thresholdX = X + 70
+                let thresholdX2 = X - 70
+                let thresholdY = Y + 70
+                let thresholdY2 = Y - 70
+                let thresholdZ = Z + 300
+                let thresholdZ2 = Z - 300
 
-                // if (i===0){
-                //     console.log(cam.eyeX, cam.eyeY, cam.eyeZ)
-                // }
+                if (lookingForBalloon){
+                    if(camera.eyeX < thresholdX && camera.eyeX > thresholdX2 && camera.eyeY > thresholdY2 && camera.eyeY < thresholdY && camera.eyeZ > thresholdZ2 && camera.eyeZ < thresholdZ) {
+                        console.log("found a balloon")
+                        balloon_name.innerHTML = balloon.balloon_name
+                        balloon_temperature.innerHTML = balloon.balloon_temperature
+                        balloon_pressure.innerHTML = balloon.balloon_pressure
 
-
-                let mouseXalt = mouseX - width/2
-                let mouseYalt = mouseY - height/2
-                // console.log(mouseXalt, mouseYalt)
-                let threshold = sphereDiameter/2
-                if (!balloon_found){
-                    if((mouseXalt - threshold< X) && (X < mouseXalt + threshold) && (mouseYalt- threshold <Y ) && (Y <mouseYalt + threshold) ){
-                    // console.log("yay it works")
-                    balloon_name.innerHTML = balloon.balloon_name
-                    balloon_colour.innerHTML = balloon.balloon_colour
-                    balloon_temperature.innerHTML = balloon.balloon_temperature
-                    balloon_found = true
+                        balloon.balloon_red = 0
+                        lookingForBalloon = false
                     }
-                    
+                    else{
+                        balloon.balloon_red = 255
+                    }
                 }
+
+
+              
                 
             }
+
+
+            // move camera
+        if (keyIsDown(LEFT_ARROW)) {
+            camera.move(-5,0,0)
+            // console.log(camera.eyeX, camera.eyeY, camera.eyeZ)
+        }
+        
+        else if (keyIsDown(RIGHT_ARROW)) {
+            camera.move(5,0,0)
+        }
+        
+        else if (keyIsDown(UP_ARROW)) {
+            camera.move(0,0,-5)
+        }
+
+        else if (keyIsDown(DOWN_ARROW)) {
+            camera.move(0,0,5)
+        }
+        else if (keyIsDown(ENTER)) {
+            camera.move(0,5,0)
+        }
+        else if (keyIsDown(BACKSPACE)) {
+            camera.move(0,-5,0)
+        }
+
 
            
         }
