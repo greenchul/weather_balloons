@@ -4,7 +4,9 @@ import names
 import threading
 import time
 
+from Environment01 import Environment
 
+environment = Environment(600)
 
 class World:
    
@@ -47,6 +49,7 @@ class Weather_balloon:
         self.balloon_name = secrets.token_urlsafe(2)
         self.balloon_temperature = random.randrange(-25, 50)
         self.balloon_pressure = random.randrange(950, 1050)
+        self.balloon_height_ft = environment.calculate_height_in_feet(self.location[1])
         self.balloon_red = 255
         self.balloon_green = 245
         self.balloon_blue = 230
@@ -62,6 +65,7 @@ class Weather_balloon:
         data["balloon_green"]= self.balloon_green
         data["balloon_blue"]= self.balloon_blue
         data["balloon_pressure"] = self.balloon_pressure
+        data["balloon_height_ft"] = self.balloon_height_ft
         return data
 
 
@@ -85,6 +89,7 @@ class Weather_balloon:
         
         while True:
             self.location[1] = self.location[1] + random.randrange(1, 6)
+            self.balloon_height_ft = environment.calculate_height_in_feet(self.location[1])
             
             time.sleep(1)
 

@@ -30,6 +30,7 @@
                 <h5 class="card-title">Balloon Info</h5>
                 <ul>
                     <li>Name: <span id="balloon_name"></span></li>
+                    <li>Height: <span id="balloon_height_ft"></span></li>
                     <li>Pressure: <span id="balloon_pressure"></span></li>
                     <li>Temperature: <span id="balloon_temperature"></span></li>
                     
@@ -50,6 +51,7 @@
         let balloon_name = document.querySelector("#balloon_name")
         let balloon_pressure = document.querySelector("#balloon_pressure")
         let balloon_temperature = document.querySelector("#balloon_temperature")
+        let balloon_height_ft = document.querySelector("#balloon_height_ft")
 
         let colour = [0,0,0]
         let balloons = []
@@ -184,6 +186,7 @@
             balloon_name.innerHTML = " "
             balloon_pressure.innerHTML = " "
             balloon_temperature.innerHTML = " "
+            balloon_height_ft.innerHTML = " "
 
 
             for (let i = 0; i<balloons.length; i++){
@@ -214,6 +217,10 @@
                         balloon_name.innerHTML = balloon.balloon_name
                         balloon_temperature.innerHTML = balloon.balloon_temperature
                         balloon_pressure.innerHTML = balloon.balloon_pressure
+                        // balloon_height_ft.innerHTML.balloon.location[1]
+                        console.log(balloon.location[1])
+                        console.log(balloon.balloon_height_ft)
+                        balloon_height_ft.innerHTML = `${balloon.balloon_height_ft}ft`
 
                         balloon.balloon_red = 0
                         lookingForBalloon = false
