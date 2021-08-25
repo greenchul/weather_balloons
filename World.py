@@ -3,10 +3,13 @@ import random
 import names
 import threading
 import time
+import math
 
 from Environment01 import Environment
 
-environment = Environment(600)
+## canvas height
+canvas_height = 600
+environment = Environment(canvas_height)
 
 class World:
    
@@ -17,7 +20,7 @@ class World:
         self.weather_balloons = []
         self.maximum_z = 100
         self.maximum_x = 300
-        self.maximum_y = 600
+        self.maximum_y = canvas_height
 
         for _balloon_index in range(self.number_of_weather_balloons):
             balloon = Weather_balloon(maximum_z = self.maximum_z, maximum_x= self.maximum_x, maximum_y = self.maximum_y)
@@ -40,16 +43,16 @@ class World:
 
     """
 class Weather_balloon:
-    def __init__(self, maximum_x = 300, maximum_z = 100, maximum_y = 600):
+    def __init__(self, maximum_x = 300, maximum_z = 100, maximum_y = canvas_height):
         # self.maximum_altitude = maximum_altitude
         self.maximum_y = maximum_y
         self.maximum_x = maximum_x
         self.maximum_z = maximum_z
         self.location = [random.randrange(-self.maximum_x, self.maximum_x), -self.maximum_y/2, random.randrange(-self.maximum_z, self.maximum_z)]
         self.balloon_name = secrets.token_urlsafe(2)
-        self.balloon_temperature = random.randrange(-25, 50)
-        self.balloon_pressure = random.randrange(950, 1050)
         self.balloon_height_ft = environment.calculate_height_in_feet(self.location[1])
+        self.balloon_temperature = environment.calculate_temperature(self.balloon_height_ft)
+        self.balloon_pressure = environment.calculate_pressure(self.balloon_height_ft)
         self.balloon_red = 255
         self.balloon_green = 245
         self.balloon_blue = 230
@@ -69,8 +72,7 @@ class Weather_balloon:
         return data
 
 
-    # def increase_height(self):
-    #     self.height = 0
+    
 
 
     def increase_altitude(self):
@@ -89,7 +91,9 @@ class Weather_balloon:
         
         while True:
             self.location[1] = self.location[1] + random.randrange(1, 6)
-            self.balloon_height_ft = environment.calculate_height_in_feet(self.location[1])
+            self.balloon_height_ft = math.floor(environment.calculate_height_in_feet(self.location[1]))
+            self.balloon_temperature = environment.calculate_temperature(self.balloon_height_ft)
+            self.balloon_pressure =  environment.calculate_pressure(self.balloon_height_ft)
             
             time.sleep(1)
 
