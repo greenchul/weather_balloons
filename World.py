@@ -94,8 +94,14 @@ class Weather_balloon:
             self.balloon_height_ft = math.floor(environment.calculate_height_in_feet(self.location[1]))
             self.balloon_temperature = environment.calculate_temperature(self.balloon_height_ft)
             self.balloon_pressure =  environment.calculate_pressure(self.balloon_height_ft)
-            
+            self.pop_balloon()
+
             time.sleep(1)
+
+    def pop_balloon(self):
+        if (self.balloon_height_ft > 20000):
+            print(f"balloon {self.balloon_name} reached popping height")
+            
 
 
 
